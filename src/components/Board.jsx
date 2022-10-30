@@ -2,7 +2,7 @@ import React from "react";
 import Box from "./Box";
 import "./Board.css";
 
-const Board = ({ board, onClick }) => {
+const Board = ({ board, onClick, winner }) => {
   return (
     <div className="board">
       {board.map((value, idx) => {
@@ -11,6 +11,7 @@ const Board = ({ board, onClick }) => {
             value={value}
             key={idx}
             onClick={() => {
+              if (winner === "O" || winner === "X") return;
               if (!value) onClick(idx);
             }}
           />

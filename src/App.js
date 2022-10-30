@@ -5,17 +5,6 @@ import Board from "./components/Board";
 import ScoreBoard from "./components/ScoreBoard";
 import ResetButton from "./components/ResetButton";
 function App() {
-  const WIN_CONDITIONS = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
   const [xPlaying, setXPlaying] = useState(true);
   const [board, setBoard] = useState(Array(9).fill(null));
   const [scores, setScores] = useState({ xScore: 0, oScore: 0 });
@@ -26,15 +15,11 @@ function App() {
   useEffect(() => {
     if (isWinner === "X") {
       setMessage("X is winner ");
-      let { xScore } = scores;
-      xScore += 1;
-      setScores({ ...scores, xScore });
+      setScores({ ...scores, xScore: scores.xScore + 1 });
     }
     if (isWinner === "O") {
       setMessage("O is winner ");
-      let { oScore } = scores;
-      oScore += 1;
-      setScores({ ...scores, oScore });
+      setScores({ ...scores, oScore: scores.oScore + 1 });
     }
   }, [isWinner]);
 
@@ -62,42 +47,64 @@ function App() {
       }
     });
 
-    const winner = checkWinner(updatedBoard);
-    setBoard(updatedBoard);
+    const winner = calculateWinner(updatedBoard);
+
+    // checkWinner(updatedBoard);
     if (checkDraw(updatedBoard)) {
       setMessage("Match draw");
       return;
     }
-
-    if (winner) {
-      setIswinner(winner);
+    if (winner?.winnerType) {
+      setIswinner(winner.winnerType);
     }
 
     setXPlaying(!xPlaying);
     setBoard(updatedBoard);
   };
 
-  const checkWinner = (board) => {
-    for (let i = 0; i < WIN_CONDITIONS.length; i++) {
-      const [x, y, z] = WIN_CONDITIONS[i];
-
-      if (board[x] && board[x] === board[y] && board[y] === board[z]) {
-        setGameOver(true);
-        return board[x];
+  const calculateWinner = (squares) => {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (
+        squares[a] &&
+        squares[a] === squares[b] &&
+        squares[a] === squares[c]
+      ) {
+        const winningData = {
+          winnerType: squares[a],
+          indexes: [a, b, c],
+        };
+        return winningData;
       }
     }
+    return null;
   };
 
   const resetBoard = () => {
     setGameOver(false);
     setMessage("");
     setBoard(Array(9).fill(null));
+    setIswinner({});
   };
 
   return (
     <>
       <ScoreBoard scores={scores} xPlaying={xPlaying} />
-      <Board board={board} onClick={gameOver ? resetBoard : handleBoxClick} />
+      <Board
+        board={board}
+        winner={isWinner}
+        onClick={gameOver ? resetBoard : handleBoxClick}
+      />
       {message && (
         <div className="message">
           <p>{message}</p>
