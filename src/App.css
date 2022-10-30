@@ -7,3 +7,11 @@ body{
     background-color: #b6b4b4;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.message{
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.3em;
+    
+}
